@@ -1,29 +1,33 @@
 <template>
   <div class="navbar">
-    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <hamburger
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+      @toggleClick="toggleSideBar"
+    />
 
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <el-checkbox v-model="checked" text-color="#fff">자동</el-checkbox>
+      <i class="el-icon-refresh icon-style"></i>
+      <i
+        class="el-icon-rank icon-style"
+        style="margin-right: 24px"
+        @click="requestFullScreen"
+      />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <span class="right-menu-text">test</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
+            <el-dropdown-item> Home </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+            <span style="display: block">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -47,36 +51,73 @@ export default {
       'avatar'
     ])
   },
+  data () {
+    return {
+      checked: true
+    }
+  },
   methods: {
-    toggleSideBar() {
+    toggleSideBar () {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
+    async logout () {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    exitFullScreen () {
+      var el = document;
+      var cfs = el.cancelFullScreen || el.webkitCancelFullScreen ||
+        el.mozCancelFullScreen || el.exitFullScreen;
+      if (typeof cfs != "undefined" && cfs) {
+        cfs.call(el);
+      } else if (typeof window.ActiveXObject != "undefined") {
+
+        var wscript = new ActiveXObject("WScript.Shell");
+        if (wscript != null) {
+          wscript.SendKeys("{F11}");
+        }
+      }
+    },
+    requestFullScreen () {
+      var element = document.getElementsByTagName("body")[0];
+      var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+      if (requestMethod) {
+        requestMethod.call(element);
+      } else if (typeof window.ActiveXObject !== "undefined") {
+        var wscript = new ActiveXObject("WScript.Shell");
+        if (wscript !== null) {
+          wscript.SendKeys("{F11}");
+        }
+      }
     }
+
+
+
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .navbar {
+  line-height: 50px;
   height: 50px;
+  // padding: 10px;
   overflow: hidden;
   position: relative;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  // background: #23262e;
+  background: #23262e;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .hamburger-container {
     line-height: 46px;
     height: 100%;
     float: left;
     cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: rgba(0, 0, 0, 0.025);
     }
   }
 
@@ -88,7 +129,14 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
-
+    .icon-style {
+      font-size: 20px;
+      margin: 12px;
+      color: #fff;
+    }
+    .right-menu-text {
+      display: inline-block;
+    }
     &:focus {
       outline: none;
     }
@@ -103,10 +151,10 @@ export default {
 
       &.hover-effect {
         cursor: pointer;
-        transition: background .3s;
+        transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: rgba(0, 0, 0, 0.025);
         }
       }
     }
